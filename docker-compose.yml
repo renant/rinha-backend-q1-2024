@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  api1: &api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: host
+    container_name: api1
+    environment:
+      - DEFAULT_CONNECTION=Host=localhost;Username=local_user;Password=local_password;Database=local_db;Maximum Pool Size=600;Max Auto Prepare=20;Timeout=30
+      - ASPNETCORE_HTTP_PORTS=8081
+    depends_on:
+      - db
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: "75MB"
+
+  api2:
+    <<: *api
+    environment:
+      - DEFAULT_CONNECTION=Host=localhost;Username=local_user;Password=local_password;Database=local_db;Maximum Pool Size=600;Max Auto Prepare=20;Timeout=30
+      - ASPNETCORE_HTTP_PORTS=8082
+    container_name: api2
+
+  db:
+    image: postgres:alpine
+    network_mode: "host"
+    env_file:
+      - .env
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    command: postgres -c max_connections=500 -c shared_buffers=50MB -c synchronous_commit=off -c fsync=off -c full_page_writes=off
+    deploy:
+      resources:
+        limits:
+          cpus: "1.2"
+          memory: "350MB"
+
+  nginx:
+    image: nginx
+    network_mode: "host"
+    container_name: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api1
+      - api2
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: "50MB"

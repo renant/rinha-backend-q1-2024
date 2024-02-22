@@ -1,0 +1,42 @@
+{
+  "profiles": {
+    "RinhaBackEnd2024": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DEFAULT_CONNECTION": "Host=localhost;Username=local_user;Password=local_password;Database=local_db;Maximum Pool Size=600;Max Auto Prepare=20;Timeout=30"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://0.0.0.0:5001;http://0.0.0.0:9999"
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DEFAULT_CONNECTION": "Host=localhost;Username=local_user;Password=local_password;Database=local_db;Maximum Pool Size=600;Max Auto Prepare=20;Timeout=30"
+      }
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/weatherforecast",
+      "environmentVariables": {
+        "ASPNETCORE_HTTPS_PORTS": "8081",
+        "ASPNETCORE_HTTP_PORTS": "8080"
+      },
+      "publishAllPorts": true,
+      "useSSL": true
+    }
+  },
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:39757",
+      "sslPort": 44327
+    }
+  }
+}
