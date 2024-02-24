@@ -3,8 +3,15 @@ using RinhaBackEnd2024.Models;
 using RinhaBackEnd2024.Persistence.Interfaces;
 using RinhaBackEnd2024.Persistence.Repositories;
 using System.Data;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder();
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.TypeInfoResolverChain.Insert(0, SourceGenerationContext.Default);
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+});
 
 var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
 

@@ -1,3 +1,18 @@
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
 CREATE UNLOGGED TABLE clientes (
 	id SERIAL PRIMARY KEY,
 	limite INTEGER NOT NULL,
@@ -14,6 +29,7 @@ CREATE UNLOGGED TABLE transacoes (
 	CONSTRAINT fk_clientes_transacoes_id
 		FOREIGN KEY (cliente_id) REFERENCES clientes(id)
 );
+
 
 CREATE INDEX IF NOT EXISTS idx_cliente_id ON clientes(id);
 CREATE INDEX IF NOT EXISTS idx_transacao_id_cliente_realizada_em_desc ON transacoes(cliente_id, realizada_em DESC);
