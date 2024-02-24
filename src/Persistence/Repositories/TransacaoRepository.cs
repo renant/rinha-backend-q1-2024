@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Npgsql;
 using RinhaBackEnd2024.Models;
 using RinhaBackEnd2024.Persistence.Interfaces;
 using System.Data;
@@ -19,9 +20,16 @@ namespace RinhaBackEnd2024.Persistence.Repositories
 
         public async Task<TransacaoResult> Adicionar(Transacao transacao)
         {
-            var atualizarSaldo = await _connection.QuerySingleOrDefaultAsync<TransacaoResult>("SELECT * FROM adicionar_transacao(@cliente_id, @tipo, @valor, @descricao)", new { transacao.cliente_id, transacao.tipo, transacao.valor, transacao.descricao });
+            try
+            {
+                var atualizarSaldo = await _connection.QuerySingleOrDefaultAsync<TransacaoResult>("SELECT * FROM adicionar_transacao(@cliente_id, @tipo, @valor, @descricao)", new { transacao.cliente_id, transacao.tipo, transacao.valor, transacao.descricao });
 
-            return atualizarSaldo;
+                return atualizarSaldo;
+            }
+            catch (PostgresException ex)
+            {
+                return new TransacaoResult { validation_error = true };
+            }
         }
     }
 }
