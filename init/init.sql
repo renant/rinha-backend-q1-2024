@@ -1,18 +1,3 @@
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
-SET default_tablespace = '';
-
-SET default_table_access_method = heap;
-
 CREATE UNLOGGED TABLE clientes (
 	id SERIAL PRIMARY KEY,
 	limite INTEGER NOT NULL,
@@ -33,6 +18,7 @@ CREATE UNLOGGED TABLE transacoes (
 
 CREATE INDEX IF NOT EXISTS idx_cliente_id ON clientes(id);
 CREATE INDEX IF NOT EXISTS idx_transacao_id_cliente_realizada_em_desc ON transacoes(cliente_id, realizada_em DESC);
+CREATE INDEX ix_transacaos_cliente_id ON transacoes USING btree (cliente_id);
 
 INSERT INTO clientes (limite) VALUES
 	(100000),
@@ -42,11 +28,11 @@ INSERT INTO clientes (limite) VALUES
 	(500000);
 
 CREATE OR REPLACE FUNCTION adicionar_transacao(id_cliente INT, tipo CHAR(1), valor NUMERIC, descricao VARCHAR)
-	RETURNS TABLE (novo_saldo NUMERIC, novo_limite NUMERIC, validation_error BOOLEAN) AS $$
+	RETURNS TABLE (novo_saldo INT, novo_limite INT, validation_error BOOLEAN) AS $$
 DECLARE
     diff INT;
-    limite_cliente NUMERIC;
-    saldo_cliente NUMERIC;
+    limite_cliente INT;
+    saldo_cliente INT;
 BEGIN
 		IF tipo = 'd' THEN
         diff := valor * -1;
@@ -54,17 +40,26 @@ BEGIN
         diff := valor;
     END IF;
 
-		UPDATE clientes 
-		SET saldo = saldo + diff 
-		WHERE id = id_cliente
-		RETURNING saldo, limite INTO saldo_cliente, limite_cliente;
+			PERFORM pg_advisory_xact_lock(id_cliente);
+			SELECT 
+				c.limite,
+				COALESCE(c.saldo, 0)
+			INTO
+				limite_cliente,
+				saldo_cliente
+			FROM clientes c
+			WHERE c.id = id_cliente;
 
 		IF (saldo_cliente + diff) < (-1 * limite_cliente) THEN
-				RAISE 'LIMITE_INDISPONIVEL';
+				RETURN QUERY SELECT saldo_cliente as novo_saldo, limite_cliente as novo_limite, true as validation_error;
 		ELSE 
+			UPDATE clientes 
+			SET saldo = saldo + diff 
+			WHERE id = id_cliente;
+
 			INSERT INTO transacoes (cliente_id, valor, tipo, descricao) VALUES (id_cliente, valor, tipo, descricao);
 
-			RETURN QUERY SELECT saldo_cliente as novo_saldo, limite_cliente as novo_limite, false as validation_error;
+			RETURN QUERY SELECT (saldo_cliente + diff) as novo_saldo, limite_cliente as novo_limite, false as validation_error;
 		END IF;
 		
 END;

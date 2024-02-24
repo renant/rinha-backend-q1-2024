@@ -1,4 +1,5 @@
 using Npgsql;
+using RinhaBackEnd2024;
 using RinhaBackEnd2024.Models;
 using RinhaBackEnd2024.Persistence.Interfaces;
 using RinhaBackEnd2024.Persistence.Repositories;
@@ -16,6 +17,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
 
 builder.Services.AddScoped<IDbConnection>(db => new NpgsqlConnection(connectionString));
+
 builder.Services.AddScoped<ITransacaoRepository, TransacaoRepository>();
 
 var app = builder.Build();
@@ -59,6 +61,11 @@ app.MapPost("/clientes/{id}/transacoes", async (int id, TransacaoRequest req, IT
 
 
     return Results.Ok(atualizarSaldo);
+});
+
+app.MapPost("/reset", async (ITransacaoRepository _transacaoRepository) =>
+{
+    await _transacaoRepository.Reset();
 });
 
 app.Run();
