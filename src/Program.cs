@@ -1,21 +1,57 @@
-global using FastEndpoints;
 using Npgsql;
+using RinhaBackEnd2024.Models;
 using RinhaBackEnd2024.Persistence.Interfaces;
 using RinhaBackEnd2024.Persistence.Repositories;
-using RinhaBackEnd2024.Persistence.UnitOfWork;
 using System.Data;
 
-var bld = WebApplication.CreateBuilder();
-bld.Services.AddFastEndpoints();
+var builder = WebApplication.CreateBuilder();
 
 var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
 
-bld.Services.AddScoped<IDbConnection>(db => new NpgsqlConnection(connectionString));
-bld.Services.AddScoped<DbSession>();
-bld.Services.AddTransient<IUnitOfWork, UnitOfWork>();
-bld.Services.AddScoped<IClienteRepository, ClienteRepository>();
-bld.Services.AddScoped<ITransacaoRepository, TransacaoRepository>();
+builder.Services.AddScoped<IDbConnection>(db => new NpgsqlConnection(connectionString));
+builder.Services.AddScoped<ITransacaoRepository, TransacaoRepository>();
 
-var app = bld.Build();
-app.UseFastEndpoints();
+var app = builder.Build();
+
+app.MapGet("/clientes/{id}/extrato", async (int id, ITransacaoRepository _transacaoRepository) =>
+{
+    if (id < 1 || id > 5)
+    {
+        return Results.NotFound();
+    }
+
+    var extrato = await _transacaoRepository.BuscarExtrato(id);
+
+    return Results.Ok(extrato);
+});
+
+app.MapPost("/clientes/{id}/transacoes", async (int id, TransacaoRequest req, ITransacaoRepository _transacaoRepository) =>
+{
+    if (id < 1 || id > 5)
+    {
+        return Results.NotFound();
+    }
+
+    var transacao = new Transacao
+        (
+            req.valor,
+            req.tipo,
+            req.descricao,
+            id
+        );
+
+    if (!transacao.IsValid())
+    {
+        return Results.UnprocessableEntity();
+    }
+
+    var atualizarSaldo = await _transacaoRepository.Adicionar(transacao);
+
+    if (atualizarSaldo.validation_error)
+        return Results.UnprocessableEntity();
+
+
+    return Results.Ok(atualizarSaldo);
+});
+
 app.Run();

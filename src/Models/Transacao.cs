@@ -2,7 +2,7 @@
 
 namespace RinhaBackEnd2024.Models
 {
-    public class Transacao
+    public record Transacao
     {
         public int valor { get; set; }
         public char tipo { get; set; }
@@ -27,6 +27,15 @@ namespace RinhaBackEnd2024.Models
 
         public Transacao()
         {
+        }
+
+        public bool IsValid()
+        {
+            return
+                valor > 0 &&
+                (tipo == 'd' || tipo == 'c')
+                && !string.IsNullOrEmpty(descricao ?? "")
+                && (descricao ?? "").Length <= 10;
         }
     }
 }

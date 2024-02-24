@@ -4,7 +4,7 @@ namespace RinhaBackEnd2024.Persistence.Interfaces
 {
     public interface ITransacaoRepository
     {
-        Task<IEnumerable<Transacao>> BuscarUltimasTransacoes(int id);
-        Task InserirTransacao(Transacao transacao);
+        Task<Extrato> BuscarExtrato(int id);
+        Task<TransacaoResult> Adicionar(Transacao transacao);
     }
 }
