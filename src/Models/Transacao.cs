@@ -25,10 +25,6 @@ namespace RinhaBackEnd2024.Models
             this.cliente_id = cliente_id;
         }
 
-        public Transacao()
-        {
-        }
-
         public bool IsValid()
         {
             return

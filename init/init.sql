@@ -1,3 +1,17 @@
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
 CREATE UNLOGGED TABLE clientes (
 	id SERIAL PRIMARY KEY,
 	limite INTEGER NOT NULL,
@@ -18,7 +32,6 @@ CREATE UNLOGGED TABLE transacoes (
 
 CREATE INDEX IF NOT EXISTS idx_cliente_id ON clientes(id);
 CREATE INDEX IF NOT EXISTS idx_transacao_id_cliente_realizada_em_desc ON transacoes(cliente_id, realizada_em DESC);
-CREATE INDEX ix_transacaos_cliente_id ON transacoes USING btree (cliente_id);
 
 INSERT INTO clientes (limite) VALUES
 	(100000),
@@ -81,12 +94,12 @@ BEGIN
     SELECT json_build_object(
         'saldo', json_build_object(
             'total', v_saldo,
-            'data_extrato', TO_CHAR(NOW(), 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
+            'data_extrato', NOW(),
             'limite', v_limite
         ),
         'ultimas_transacoes', COALESCE((
             SELECT json_agg(row_to_json(t)) FROM (
-                SELECT valor, tipo, descricao, TO_CHAR(realizada_em, 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as realizada_em
+                SELECT valor, tipo, descricao, realizada_em
                 FROM transacoes
                 WHERE cliente_id = p_id
                 ORDER BY realizada_em DESC

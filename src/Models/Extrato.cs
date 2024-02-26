@@ -9,6 +9,6 @@
     {
         public int total { get; set; }
         public int limite { get; set; }
-        public string data_extrato { get; set; }
+        public DateTime data_extrato { get; set; }
     }
 }
