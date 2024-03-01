@@ -1,3 +1,4 @@
+
 # Rinha de Backend - 2024/Q1
 
 ## Descrição
@@ -20,7 +21,7 @@ docker compose up -d
 
 ## Aprendizados
 
-Tive varios aprendizados utilizando como referencia os projetos dos participantes, citando principalmente:
+Tive vários aprendizados utilizando como referência os projetos dos participantes, citando principalmente:
 
  - @jonathanperis(https://github.com/jonathanperis/rinha2-back-end-bora-dale/tree/main)
  - @giggio(https://github.com/giggio/rinhaback2401-01)
