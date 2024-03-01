@@ -1,11 +1,13 @@
+using Npgsql;
 using RinhaBackEnd2024;
 using RinhaBackEnd2024.Models;
 using RinhaBackEnd2024.Persistence.Interfaces;
 using RinhaBackEnd2024.Persistence.Repositories;
+using System.Data;
 using System.Text.Json;
 
 
-var builder = WebApplication.CreateBuilder();
+var builder = WebApplication.CreateSlimBuilder(args);
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -15,7 +17,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 var connectionString = Environment.GetEnvironmentVariable("DEFAULT_CONNECTION");
 
-builder.Services.AddNpgsqlDataSource(connectionString);
+builder.Services.AddScoped<IDbConnection>(sp => new NpgsqlConnection(connectionString));
 builder.Services.AddScoped<ITransacaoRepository, TransacaoRepository>();
 
 var app = builder.Build();
