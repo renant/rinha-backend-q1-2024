@@ -22,5 +22,5 @@ docker compose up -d
 
 Tive varios aprendizados utilizando como referencia os projetos dos participantes, citando principalmente:
 
-@jonathanperis(https://github.com/jonathanperis/rinha2-back-end-bora-dale/tree/main)
-@giggio(https://github.com/giggio/rinhaback2401-01)
+ - @jonathanperis(https://github.com/jonathanperis/rinha2-back-end-bora-dale/tree/main)
+ - @giggio(https://github.com/giggio/rinhaback2401-01)
