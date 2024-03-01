@@ -7,14 +7,6 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder();
 
-builder.WebHost.ConfigureKestrel(serverOptions =>
-{
-    serverOptions.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(3);
-    serverOptions.Limits.MaxConcurrentConnections = 200;
-    serverOptions.Limits.MaxConcurrentUpgradedConnections = 200;
-});
-
-
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.TypeInfoResolverChain.Insert(0, SourceGenerationContext.Default);
