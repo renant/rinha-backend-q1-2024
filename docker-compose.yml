@@ -3,9 +3,10 @@ version: "3.9"
 services:
   api1: &api
     network_mode: "host"
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: renant/rinha-api-dotnet-aot
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.aot
     container_name: api1
     environment:
       - DEFAULT_CONNECTION=Host=localhost;Username=local_user;Password=local_password;Database=local_db;
@@ -16,8 +17,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.30"
-          memory: "70MB"
+          cpus: "0.3"
+          memory: "50MB"
 
   api2:
     <<: *api
@@ -38,7 +39,7 @@ services:
       resources:
         limits:
           cpus: "0.75"
-          memory: "400MB"
+          memory: "430MB"
 
   nginx:
     network_mode: "host"
@@ -53,7 +54,7 @@ services:
       resources:
         limits:
           cpus: "0.15"
-          memory: "10MB"
+          memory: "20MB"
 
 networks:
   default:
